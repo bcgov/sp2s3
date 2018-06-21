@@ -4,6 +4,7 @@
   "description": "move files from sharepoint document library to s3 periodically",
   "main": "index.js",
   "scripts": {
+    "start": "node .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -19,5 +20,10 @@
   "bugs": {
     "url": "https://github.com/f-w/sp2s3/issues"
   },
-  "homepage": "https://github.com/f-w/sp2s3#readme"
+  "homepage": "https://github.com/f-w/sp2s3#readme",
+  "dependencies": {
+    "httpntlm": "^1.7.6",
+    "node-getopt": "^0.3.2",
+    "xml2js": "^0.4.19"
+  }
 }
