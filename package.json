@@ -1,0 +1,23 @@
+{
+  "name": "sp2s3",
+  "version": "1.0.0",
+  "description": "move files from sharepoint document library to s3 periodically",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "sharepoint",
+    "s3"
+  ],
+  "author": "f-w",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/f-w/sp2s3.git"
+  },
+  "bugs": {
+    "url": "https://github.com/f-w/sp2s3/issues"
+  },
+  "homepage": "https://github.com/f-w/sp2s3#readme"
+}
