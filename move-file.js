@@ -26,6 +26,7 @@ module.exports = function (args) {
             domain: spDomain
         }, function (err, res) {
             if (err) {
+                console.error(`error getting file list: ${err}`)
                 return err
             }
             let parseString = require('xml2js').parseString
@@ -44,6 +45,7 @@ module.exports = function (args) {
                             binary: true
                         }, function (err, response) {
                             if (err) {
+                                console.error(`error getting file ${e.content[0].$.src}: ${err}`)
                                 return err
                             }
                             let filePath = decodeURIComponent(e.content[0].$.src)
@@ -53,8 +55,10 @@ module.exports = function (args) {
                                 Key: s3PathPrefix + `/${fileName}`,
                                 Body: response.body
                             }, function (err, data) {
-                                if (err) return console.log("error writing file")
-                                console.log(data)
+                                if (err) {
+                                    console.error(`error uploading file ${fileName}: ${err}`)
+                                    return err
+                                }
                                 // delete sp file
                                 httpntlm.delete({
                                     url: e.id[0],
