@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/f-w/sp2s3#readme",
   "dependencies": {
+    "aws-sdk": "^2.261.1",
     "httpntlm": "^1.7.6",
     "node-getopt": "^0.3.2",
     "xml2js": "^0.4.19"

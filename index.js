@@ -6,6 +6,10 @@ const getOpt = require('node-getopt')
         ['u', 'sp-user=<string>', 'sharepoint login user name'],
         ['d', 'sp-domain=<string>', 'sharepoint login user domain.'],
         ['p', 'sp-password=<string>', 'sharepoint login password'],
+        ['b', 's3-bucket=<string>', 's3 bucket'],
+        ['r', 's3-path-prefix=<string>', 's3 path prefix'],
+        ['a', 'aws-access-key-id=<string>', 'aws access key id'],
+        ['k', 'aws-secret-access-key=<string>', 'aws secret access key'],
         ['h', 'help', 'display this help']
     ])
     .bindHelp(
@@ -16,6 +20,17 @@ const spUrl = args.options['sp-url'] || process.env.SP_URL
 const spUser = args.options['sp-user'] || process.env.SP_USER
 const spDomain = args.options['sp-domain'] || process.env.SP_DOMAIN
 const spPassword = args.options['sp-password'] || process.env.SP_PASSWORD
+const s3Bucket = args.options['s3-bucket'] || process.env.S3_BUCKET
+const s3PathPrefix = args.options['s3-path-prefix'] || process.env.S3_PATH_PREFIX
+const awsAccessKeyId = args.options['aws-access-key-id'] || process.env.AWS_ACCESS_KEY_ID
+const awsSecretAccessKey = args.options['aws-secret-access-key'] || process.env.AWS_SECRET_ACCESS_KEY
+
+const AWS = require('aws-sdk')
+AWS.config.update({
+    accessKeyId: awsAccessKeyId,
+    secretAccessKey: awsSecretAccessKey
+})
+const s3 = new AWS.S3({ apiVersion: '2018-06-21' })
 
 httpntlm.get({
     url: spUrl,
@@ -46,8 +61,13 @@ httpntlm.get({
                     }
                     let filePath = decodeURIComponent(e.content[0].$.src)
                     let fileName = filePath.substring(filePath.lastIndexOf('/') + 1)
-                    fs.writeFile(fileName, response.body, function (err) {
+                    s3.upload({
+                        Bucket: s3Bucket,
+                        Key: s3PathPrefix + `/${fileName}`,
+                        Body: response.body
+                    }, function (err, data) {
                         if (err) return console.log("error writing file")
+                        console.log(data)
                         // delete sp file
                         httpntlm.delete({
                             url: e.id[0],
