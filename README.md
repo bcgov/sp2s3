@@ -4,7 +4,10 @@ Utility to move all files from a Sharepoint document library to s3, once or cron
 Works for SharePoint 2010 and newer.
 
 ## Install
+Choose one of the following verified methods
 
+### From Source
+Need latest git and nodejs
 ```bash
 > git clone https://github.com/f-w/sp2s3.git
 > cd sp2s3
@@ -12,10 +15,23 @@ Works for SharePoint 2010 and newer.
 > node . <opts>
 ```
 
+### Docker
+
+```bash
+> docker build -t sp2s3 https://github.com/f-w/sp2s3.git
+> docker run sp2s3 npm start -- <opts>
+```
+
+### Openshift
+
+```bash
+> oc new-app https://github.com/f-w/sp2s3.git <-e ENV=VALUE> ...
+```
+
 ## Usage
 *sp2s3* takes following input parameters in the form of either command line option or environment variable, with command line option taking precedence
 
-| Command Line Opt           | Environment           | Mandatory | Description                                                                                                    |
+| Command Line Opt           | Environment Variable  | Mandatory | Description                                                                                                    |
 |----------------------------|-----------------------|-----------|----------------------------------------------------------------------------------------------------------------|
 | -s, --sp-url                | SP_URL                | Yes       | sharepoint document library url, for example  https://my-site/_vti_bin/ListData.svc/mydoclib                   |
 | -u, --sp-user               | SP_USER               | Yes       | sharepoint login user name                                                                                     |
