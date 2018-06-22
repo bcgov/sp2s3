@@ -2,7 +2,7 @@ const getOpt = require('node-getopt')
     .create([
         ['s', 'sp-url=<string>', 'sharepoint document library url'],
         ['u', 'sp-user=<string>', 'sharepoint login user name'],
-        ['d', 'sp-domain=<string>', 'sharepoint login user domain.'],
+        ['d', 'sp-domain=<string>', 'sharepoint login user domain'],
         ['p', 'sp-password=<string>', 'sharepoint login password'],
         ['b', 's3-bucket=<string>', 's3 bucket'],
         ['r', 's3-path-prefix=<string>', 's3 path prefix'],
