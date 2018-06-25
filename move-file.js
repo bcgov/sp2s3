@@ -18,6 +18,7 @@ module.exports = function (args) {
     })
     const s3 = new AWS.S3({ apiVersion: '2018-06-21' })
 
+    const spWebUrl = spUrl.substring(0, spUrl.toLowerCase().indexOf('/_vti_bin'))
     return function () {
         httpntlm.get({
             url: spUrl,
@@ -48,8 +49,8 @@ module.exports = function (args) {
                                 console.error(`error getting file ${e.content[0].$.src}: ${err}`)
                                 return err
                             }
-                            let filePath = decodeURIComponent(e.content[0].$.src)
-                            let fileName = filePath.substring(filePath.lastIndexOf('/') + 1)
+                            let filePath = e.content[0].$.src.substring(spWebUrl.length + 1)
+                            let fileName = decodeURIComponent(filePath.substring(filePath.indexOf('/') + 1))
                             s3.upload({
                                 Bucket: s3Bucket,
                                 Key: s3PathPrefix + `/${fileName}`,

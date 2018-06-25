@@ -30,5 +30,5 @@ Works for SharePoint 2010 and newer.
 ## Limitations
 
 * only NTLM authentication to sp is supported
-* doesn't support folder - although all files in subfolders are moved to s3, they are flattened before moving. Duplicated file names overwrites each other on s3 and the order is undetermined. After moving files are deleted from sp doc lib but not folders
 * doesn't support sp recycle bin - files are permanently deleted from sp doc lib after successful uploading to s3, rather than moving to recycle bin
+* folders are not deleted from sp doc lib after moving files
