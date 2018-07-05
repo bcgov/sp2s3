@@ -46,6 +46,7 @@ An Openshift app is expected to be long running so env *CRON_TIME_SPEC* document
 | -a, --aws-access-key-id     | AWS_ACCESS_KEY_ID     | Yes       | aws access key id                                                                                              |
 | -k, --aws-secret-access-key | AWS_SECRET_ACCESS_KEY | Yes       | aws secret access key                                                                                          |
 | -c, --cron-time-spec        | CRON_TIME_SPEC        | No        | [node cron patterns](https://github.com/kelektiv/node-cron#available-cron-patterns). *0 0 1 \* \* \** as hourly, for example. If not set then run once. If set, a round of operation is performed immediately upon launching regardless of time spec. |
+| -C, --concurrency        | CONCURRENCY        | No        | How many files are processed concurrently? Default to 10 if not set. |
 
 ## Limitations
 

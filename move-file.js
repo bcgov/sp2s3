@@ -10,6 +10,7 @@ module.exports = function (args) {
     const s3PathPrefix = args.options['s3-path-prefix'] || process.env.S3_PATH_PREFIX
     const awsAccessKeyId = args.options['aws-access-key-id'] || process.env.AWS_ACCESS_KEY_ID
     const awsSecretAccessKey = args.options['aws-secret-access-key'] || process.env.AWS_SECRET_ACCESS_KEY
+    const concurrency = args.options['concurrency'] || process.env.CONCURRENCY || 10
 
     const AWS = require('aws-sdk')
     AWS.config.update({
@@ -19,6 +20,8 @@ module.exports = function (args) {
     const s3 = new AWS.S3({ apiVersion: '2018-06-21' })
 
     const spWebUrl = spUrl.substring(0, spUrl.toLowerCase().indexOf('/_vti_bin'))
+    const queue = require('async/queue')
+
     return function () {
         httpntlm.get({
             url: spUrl,
@@ -32,12 +35,8 @@ module.exports = function (args) {
             }
             let parseString = require('xml2js').parseString
             parseString(res.body, (err, result) => {
-                result.feed.entry.forEach(e => {
+                let q = queue(function (e, cb) {
                     try {
-                        if (e["m:properties"][0]["d:ContentType"][0] !== "Document") {
-                            // skip non-document items such as folders
-                            return
-                        }
                         httpntlm.get({
                             url: e.content[0].$.src,
                             username: spUser,
@@ -47,7 +46,7 @@ module.exports = function (args) {
                         }, function (err, response) {
                             if (err) {
                                 console.error(`error getting file ${e.content[0].$.src}: ${err}`)
-                                return err
+                                return cb(err)
                             }
                             let filePath = e.content[0].$.src.substring(spWebUrl.length + 1)
                             let fileName = decodeURIComponent(filePath.substring(filePath.indexOf('/') + 1))
@@ -58,7 +57,7 @@ module.exports = function (args) {
                             }, function (err, data) {
                                 if (err) {
                                     console.error(`error uploading file ${fileName}: ${err}`)
-                                    return err
+                                    return cb(err)
                                 }
                                 // delete sp file
                                 httpntlm.delete({
@@ -67,15 +66,37 @@ module.exports = function (args) {
                                     password: spPassword,
                                     domain: spDomain,
                                 }, function (err, res) {
-                                    if (err) return console.log("error deleting file")
+                                    if (err) {
+                                        console.error(`error deleting file ${fileName}: ${err}`)
+                                        return cb(err)
+                                    }
                                     console.info(`successfully deleted file ${fileName}.`)
+                                    return cb()
                                 })
                             })
                         })
                     }
                     catch (ex) {
+                        console.error(`caught exception: ${ex}`)
+                        return cb(ex)
+                    }
+                }, concurrency)
+                q.drain = function () {
+                    console.info('finished processing')
+                }
+                let queuedTasks = []
+                result.feed.entry.forEach(e => {
+                    try {
+                        if (e["m:properties"][0]["d:ContentType"][0] !== "Document") {
+                            // skip non-document items such as folders
+                            return
+                        }
+                        queuedTasks.push(e)
+                    }
+                    catch (ex) {
                     }
                 })
+                q.push(queuedTasks)
             })
         })
     }

@@ -9,6 +9,7 @@ const getOpt = require('node-getopt')
         ['a', 'aws-access-key-id=<string>', 'aws access key id'],
         ['k', 'aws-secret-access-key=<string>', 'aws secret access key'],
         ['c', 'cron-time-spec=<string>', 'cron time spec'],
+        ['C', 'concurrency=<string>', 'concurrency'],
         ['h', 'help', 'display this help']
     ])
     .bindHelp(
