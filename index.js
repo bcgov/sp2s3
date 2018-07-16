@@ -18,6 +18,24 @@ const getOpt = require('node-getopt')
 const args = getOpt.parseSystem()
 const moveFile = require('./move-file')(args)
 const cronTimeSpec = args.options['cron-time-spec'] || process.env.CRON_TIME_SPEC
+
+// add timestamp to outputs
+let log = console.log
+console.log = function () {
+    arguments[0] = new Date().toISOString() + ': ' + arguments[0]
+    log.apply(console, arguments)
+}
+let error = console.error
+console.error = function () {
+    arguments[0] = new Date().toISOString() + ': ' + arguments[0]
+    info.apply(console, arguments)
+}
+let info = console.info
+console.info = function () {
+    arguments[0] = new Date().toISOString() + ': ' + arguments[0]
+    info.apply(console, arguments)
+}
+
 if (!cronTimeSpec) {
     moveFile()
     return

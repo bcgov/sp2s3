@@ -1,5 +1,5 @@
 # sp2s3
-Utility to move all files from a Sharepoint document library to s3, once or cron. Because Sharepoint supports extracting attachements of an incoming email to document library, by derivation the utility can automate extracting email attachments to s3 via Sharepoint.
+Utility to move all files from a Sharepoint document library to s3, once or cron. Because Sharepoint supports extracting attachements of an incoming email to document library, the utility can therefore automate extracting email attachments to s3 via Sharepoint too.
 
 Works for SharePoint 2010 and newer.
 
@@ -32,7 +32,7 @@ oc new-app https://github.com/f-w/sp2s3.git <-e ENV=VALUE> ...
 ```
 An Openshift app is expected to be long running so env *CRON_TIME_SPEC* documented below is mandatory.
 
-To uninstall
+To uninstall, assuming the app name is the default *sp2s3* and there is no other app with duplicated name
 
 ```
 oc delete all -l app=sp2s3 --grace-period=0 --force --cascade

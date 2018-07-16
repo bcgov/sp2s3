@@ -23,6 +23,7 @@ module.exports = function (args) {
     const queue = require('async/queue')
 
     return function () {
+        console.info('started processing')
         httpntlm.get({
             url: spUrl,
             username: spUser,
@@ -70,7 +71,7 @@ module.exports = function (args) {
                                         console.error(`error deleting file ${fileName}: ${err}`)
                                         return cb(err)
                                     }
-                                    console.info(`successfully deleted file ${fileName}.`)
+                                    console.info(`successfully deleted file ${fileName}`)
                                     return cb()
                                 })
                             })
@@ -85,7 +86,7 @@ module.exports = function (args) {
                     console.info('finished processing')
                 }
                 let queuedTasks = []
-                result.feed.entry.forEach(e => {
+                result.feed.entry && result.feed.entry.forEach(e => {
                     try {
                         if (e["m:properties"][0]["d:ContentType"][0] !== "Document") {
                             // skip non-document items such as folders
