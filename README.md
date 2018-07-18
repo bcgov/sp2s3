@@ -30,7 +30,7 @@ Need oc cli and logged into openshift target deployment project
 ```
 oc new-app https://github.com/f-w/sp2s3.git <-e ENV=VALUE> ...
 ```
-An Openshift app is expected to be long running so env *CRON_TIME_SPEC* documented below is mandatory.
+An Openshift app is expected to be long running so env *CRON_TIME_SPEC* documented below is mandatory. Unless the task is running hourly or more frequent, it is also advised to set *CRON_TIME_ZONE* because time zone defaults to UTC rather than local by the builder image.
 
 To uninstall, assuming the app name is the default *sp2s3* and there is no other app with duplicated name
 
@@ -52,6 +52,7 @@ oc delete all -l app=sp2s3 --grace-period=0 --force --cascade
 | -a, --aws-access-key-id     | AWS_ACCESS_KEY_ID     | Yes       | aws access key id                                                                                              |
 | -k, --aws-secret-access-key | AWS_SECRET_ACCESS_KEY | Yes       | aws secret access key                                                                                          |
 | -c, --cron-time-spec        | CRON_TIME_SPEC        | No        | [node cron patterns](https://github.com/kelektiv/node-cron#available-cron-patterns). *0 0 \* \* \* \** as hourly, for example. If not set then run once. If set, a round of operation is performed immediately upon launching regardless of time spec. |
+| -z, --cron-time-zone        | CRON_TIME_ZONE        | No        | time zone such as *America/Los_Angeles*. All time zones are available at [Moment Timezone](http://momentjs.com/timezone/).  |
 | -C, --concurrency        | CONCURRENCY        | No        | How many files are processed concurrently? Default to 10 if not set. |
 
 ## Limitations

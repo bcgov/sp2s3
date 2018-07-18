@@ -9,6 +9,7 @@ const getOpt = require('node-getopt')
         ['a', 'aws-access-key-id=<string>', 'aws access key id'],
         ['k', 'aws-secret-access-key=<string>', 'aws secret access key'],
         ['c', 'cron-time-spec=<string>', 'cron time spec'],
+        ['z', 'cron-time-zone=<string>', 'cron time zone'],
         ['C', 'concurrency=<string>', 'concurrency'],
         ['h', 'help', 'display this help']
     ])
@@ -18,6 +19,7 @@ const getOpt = require('node-getopt')
 const args = getOpt.parseSystem()
 const moveFile = require('./move-file')(args)
 const cronTimeSpec = args.options['cron-time-spec'] || process.env.CRON_TIME_SPEC
+const cronTimeZone = args.options['cron-time-zone'] || process.env.CRON_TIME_ZONE
 
 // add timestamp to outputs
 let log = console.log
@@ -45,5 +47,6 @@ new CronJob({
     cronTime: cronTimeSpec,
     onTick: moveFile,
     runOnInit: true,
-    start: true
+    start: true,
+    timeZone: cronTimeZone
 })
