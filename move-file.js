@@ -71,7 +71,7 @@ module.exports = function (args) {
                                         console.error(`error deleting file ${fileName}: ${err}`)
                                         return cb(err)
                                     }
-                                    console.info(`successfully deleted file ${fileName}`)
+                                    console.info(`successfully moved file ${fileName}`)
                                     return cb()
                                 })
                             })

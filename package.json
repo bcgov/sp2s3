@@ -1,7 +1,7 @@
 {
   "name": "sp2s3",
   "version": "1.0.0",
-  "description": "move files from sharepoint document library to s3 periodically",
+  "description": "move files from sharepoint document library to s3, once or cron",
   "main": "index.js",
   "scripts": {
     "start": "node .",
