@@ -15,12 +15,12 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/f-w/sp2s3.git"
+    "url": "git+https://github.com/bcgov/sp2s3.git"
   },
   "bugs": {
-    "url": "https://github.com/f-w/sp2s3/issues"
+    "url": "https://github.com/bcgov/sp2s3/issues"
   },
-  "homepage": "https://github.com/f-w/sp2s3#readme",
+  "homepage": "https://github.com/bcgov/sp2s3#readme",
   "dependencies": {
     "async": "^2.6.1",
     "aws-sdk": "^2.261.1",
