@@ -11,6 +11,9 @@ const getOpt = require('node-getopt')
         ['c', 'cron-time-spec=<string>', 'cron time spec'],
         ['z', 'cron-time-zone=<string>', 'cron time zone'],
         ['C', 'concurrency=<string>', 'concurrency'],
+        ['A', 'sp-auth-scheme=<ntml|adfs>', 'sharepoint authentication scheme'],
+        ['R', 'sp-adfs-relying-party=<string>', 'sharepoint adfs relying party'],
+        ['U', 'sp-adfs-url=<string>', 'sharepoint adfs url'],
         ['h', 'help', 'display this help']
     ])
     .bindHelp(

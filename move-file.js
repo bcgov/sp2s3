@@ -1,7 +1,9 @@
 module.exports = function (args) {
 
     const fs = require('fs')
+    const spauth = require('node-sp-auth')
     const httpntlm = require('httpntlm')
+    const request = require('request')
     const spUrl = args.options['sp-url'] || process.env.SP_URL
     const spUser = args.options['sp-user'] || process.env.SP_USER
     const spDomain = args.options['sp-domain'] || process.env.SP_DOMAIN
@@ -11,25 +13,54 @@ module.exports = function (args) {
     const awsAccessKeyId = args.options['aws-access-key-id'] || process.env.AWS_ACCESS_KEY_ID
     const awsSecretAccessKey = args.options['aws-secret-access-key'] || process.env.AWS_SECRET_ACCESS_KEY
     const concurrency = args.options['concurrency'] || process.env.CONCURRENCY || 10
+    const authScheme = args.options['sp-auth-scheme'] || process.env.SP_AUTH_SCHEME
+    const spAdfsRelyingParty = args.options['sp-adfs-relying-party'] || process.env.SP_ADFS_RELYING_PARTY
+    const spAdfsUrl = args.options['sp-adfs-url'] || process.env.SP_ADFS_URL
 
     const AWS = require('aws-sdk')
     AWS.config.update({
         accessKeyId: awsAccessKeyId,
         secretAccessKey: awsSecretAccessKey
     })
-    const s3 = new AWS.S3({ apiVersion: '2018-06-21' })
+    const s3 = new AWS.S3({
+        apiVersion: '2018-06-21'
+    })
 
     const spWebUrl = spUrl.substring(0, spUrl.toLowerCase().indexOf('/_vti_bin'))
     const queue = require('async/queue')
 
-    return function () {
+    return async function () {
         console.info('started processing')
-        httpntlm.get({
-            url: spUrl,
-            username: spUser,
-            password: spPassword,
-            domain: spDomain
-        }, function (err, res) {
+        let httpClientRequest, httpClientRequestOptionTemplate
+        if (authScheme === 'adfs') {
+            httpClientRequest = request
+            let res
+            try {
+                res = await spauth.getAuth(spUrl, {
+                    username: spUser,
+                    password: spPassword,
+                    domain: spDomain,
+                    relyingParty: spAdfsRelyingParty,
+                    adfsUrl: spAdfsUrl,
+                })
+            } catch (err) {
+                console.error(`error getting adfs cookie: ${err}`)
+                return err
+            }
+            httpClientRequestOptionTemplate = {
+                headers: res.headers
+            }
+        } else {
+            httpClientRequest = httpntlm
+            httpClientRequestOptionTemplate = {
+                username: spUser,
+                password: spPassword,
+                domain: spDomain,
+            }
+        }
+        httpClientRequest.get(Object.assign({}, httpClientRequestOptionTemplate, {
+            url: spUrl
+        }), function (err, res) {
             if (err) {
                 console.error(`error getting file list: ${err}`)
                 return err
@@ -38,13 +69,10 @@ module.exports = function (args) {
             parseString(res.body, (err, result) => {
                 let q = queue(function (e, cb) {
                     try {
-                        httpntlm.get({
+                        httpClientRequest.get(Object.assign({}, httpClientRequestOptionTemplate, {
                             url: e.content[0].$.src,
-                            username: spUser,
-                            password: spPassword,
-                            domain: spDomain,
                             binary: true
-                        }, function (err, response) {
+                        }), function (err, response) {
                             if (err) {
                                 console.error(`error getting file ${e.content[0].$.src}: ${err}`)
                                 return cb(err)
@@ -61,12 +89,9 @@ module.exports = function (args) {
                                     return cb(err)
                                 }
                                 // delete sp file
-                                httpntlm.delete({
+                                httpClientRequest.delete(Object.assign({}, httpClientRequestOptionTemplate, {
                                     url: e.id[0],
-                                    username: spUser,
-                                    password: spPassword,
-                                    domain: spDomain,
-                                }, function (err, res) {
+                                }), function (err, res) {
                                     if (err) {
                                         console.error(`error deleting file ${fileName}: ${err}`)
                                         return cb(err)
@@ -76,8 +101,7 @@ module.exports = function (args) {
                                 })
                             })
                         })
-                    }
-                    catch (ex) {
+                    } catch (ex) {
                         console.error(`caught exception: ${ex}`)
                         return cb(ex)
                     }
@@ -93,9 +117,7 @@ module.exports = function (args) {
                             return
                         }
                         queuedTasks.push(e)
-                    }
-                    catch (ex) {
-                    }
+                    } catch (ex) {}
                 })
                 q.push(queuedTasks)
             })

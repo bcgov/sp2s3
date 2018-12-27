@@ -46,9 +46,12 @@ oc delete all -l app=sp2s3 --grace-period=0 --force --cascade
 | Command Line Opt           | Environment Variable  | Mandatory | Description                                                                                                    |
 |----------------------------|-----------------------|-----------|----------------------------------------------------------------------------------------------------------------|
 | -s, --sp-url                | SP_URL                | Yes       | sharepoint document library REST API url, for example https://my-site/_vti_bin/ListData.svc/mydoclib                   |
+| -A, --sp-auth-scheme               | SP_AUTH_SCHEME                | No       | sharepoint authentication scheme - ntlm or adfs. Default to ntlm if absent                 |
 | -u, --sp-user               | SP_USER               | Yes       | sharepoint login user name                                                                                     |
 | -d, --sp-domain             | SP_DOMAIN             | Yes       | sharepoint login user domain                                                                                   |
 | -p, --sp-password           | SP_PASSWORD           | Yes       | sharepoint login password                                                                                      |
+| -R, --sp-adfs-relying-party           | SP_ADFS_RELYING_PARTY           | Yes if sp authentication scheme is adfs       | adfs relying party, for example *urn:&lt;myorg>* . To get relying party, inspect the http request to ADFS server by opening the browser web debug console. Look for the *wtrealm* query string parameter as shown ![wtrealm](./wtrealm.png) |
+| -U, --sp-adfs-url           | SP_ADFS_URL           | Yes if sp authentication scheme is adfs       | adfs URL, for example *https://<span></span>sts3.&lt;myorg>* |
 | -b, --s3-bucket             | S3_BUCKET             | Yes       | s3 bucket                                                                                                      |
 | -r, --s3-path-prefix        | S3_PATH_PREFIX        | Yes       | s3 path prefix                                                                                                 |
 | -a, --aws-access-key-id     | AWS_ACCESS_KEY_ID     | Yes       | aws access key id                                                                                              |
@@ -59,7 +62,7 @@ oc delete all -l app=sp2s3 --grace-period=0 --force --cascade
 
 ## Limitations
 
-* only NTLM authentication to sp is supported
+* only NTLM and ADFS authentication to sp are supported
 * doesn't support sp recycle bin, instead files are permanently deleted from sp doc lib after successful uploading to s3
 * folders are not deleted from sp doc lib after moving files
 * file metadata is not moved
