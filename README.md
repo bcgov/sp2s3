@@ -1,3 +1,5 @@
+[![img](https://img.shields.io/badge/Lifecycle-Stable-97ca00)]
+
 [![Known Vulnerabilities](https://snyk.io/test/github/bcgov/sp2s3/badge.svg?targetFile=package.json)](https://snyk.io/test/github/bcgov/sp2s3?targetFile=package.json)
 
 # sp2s3
